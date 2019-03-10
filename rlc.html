@@ -1,0 +1,255 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+
+    <title>Seri Devre</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template -->
+    <link href="css/template.css" rel="stylesheet">
+
+    <!-- Vuejs -->
+    <script src="js/vue.js"></script>
+
+  </head>
+
+  <body>
+    <div id="app">
+      <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+        <h5 class="my-0 mr-md-auto font-weight-normal">AC-DC DEVRE ANALİZİ</h5>
+        <nav class="my-2 my-md-0 mr-md-3">
+          <a class="p-2 text-dark" href="index.html">Seri Devre</a>
+          <a class="p-2 text-dark" href="parallel.html">Paralel Devre</a>
+          <a class="p-2 text-dark" href="rl.html">RL</a>
+          <a class="p-2 text-dark" href="rlc.html">RLC</a>
+        </nav>
+      </div>
+
+      <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+        <h1 class="display-4">RLC</h1>
+      </div>
+
+      <div class="container">
+
+        <div class="card-deck mb-3">
+
+          <div class="card mb-4 shadow-sm">
+
+            <div class="card-header">
+              <h4 class="my-0 font-weight-normal">RLC</h4>
+            </div>
+            <div class="card-body">
+              
+              <div class="container">
+
+                <div class="row">
+                  
+                  <div class="col-lg-6">
+                    <form>
+                      <div class="form-group">
+                        <label for="ana_gerilim">Ana gerilim giriniz</label>
+                        <input v-model="ana_gerilim" type="number" class="form-control" id="ana_gerilim" min="1" placeholder="Ana gerilimi giriniz" required="">
+                      </div>
+                      <div class="form-group">
+                        <label for="frekans">Frekans giriniz</label>
+                        <input v-model="frekans" type="number" class="form-control" id="frekans" placeholder="Frekans giriniz">
+                      </div>
+
+                      <div class="form-row">
+                        <div class="form-group  col-md-7" id="seri_direnc_r1_input">
+                          <label for="seri_direnc">R direnç giriniz</label>
+                          <input v-model="seri_direnc" type="number" class="form-control" id="seri_direnc" min="0" placeholder="R dirençi giriniz">
+                        </div>
+                        <div class="form-group col-md-5">
+                          <label for="seri_direnc_birim">Birimi</label>
+                            <select v-model="seri_direnc_birim" class="form-control" id="seri_direnc_birim" required>
+                              <option value="">Seçiniz</option>
+                              <option value="3">kΩ</option>
+                              <option value="0" selected>-</option>
+                              <option value="-3">mΩ</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div class="form-row">
+                          <div class="form-group  col-md-7">
+                            <label for="seri_l">L giriniz</label>
+                            <input v-model="seri_l" type="number" class="form-control" id="seri_l" min="0"  step="0.000001" placeholder="L giriniz" required="">
+                          </div>
+                        
+                          <div class="form-group col-md-5">
+                            <label for="seri_l_birim">Birimi</label>
+                            <select v-model="seri_l_birim" class="form-control" id="seri_l_birim" required>
+                              <option value="">Seçiniz</option>
+                              <option value="9">GH</option>
+                              <option value="6">MH</option>
+                              <option value="3">kH</option>
+                              <option selected value="0">-</option>
+                              <option value="-3">mH</option>
+                              <option value="-6">µH</option>
+                              <option value="-9">nH</option>
+                              <option value="-12">pH</option>
+                            </select>
+                          </div>
+                        
+                            <div class="form-group  col-md-7">
+                              <label for="seri_c">C giriniz</label>
+                              <input v-model="seri_c" type="number" class="form-control" id="seri_c" min="0"  step="0.000001" placeholder="C giriniz" required="">
+                            </div>
+
+                           <div class="form-group col-md-5">
+                            <label for="seri_c_birim">Birimi</label>
+                            <select v-model="seri_c_birim" class="form-control" id="seri_c_birim" required>
+                              <option value="">Seçiniz</option>
+                              <option value="9">GH</option>
+                              <option value="6">MH</option>
+                              <option value="3">kH</option>
+                              <option selected value="0">-</option>
+                              <option value="-3">mH</option>
+                              <option value="-6">µH</option>
+                              <option value="-9">nH</option>
+                              <option value="-12">pH</option>
+                            </select>
+                          </div>
+
+
+                        </div>
+
+
+                      </template>
+
+                      <button type="button" class="btn btn-lg btn-block btn-outline-primary" @click="hesapla">Hesapla</button>
+
+
+                      <template v-if="getCalculated">
+                        <br>
+                        <table class="table table-bordered">
+                              <thead>
+                              <th>XL</th>
+                              <th>XC</th>
+                              <th>Z</th>
+                              <th>I</th>
+                                <th>U<sub>R</sub></th>
+                                <th>U<sub>L</sub></th>
+                                <th>U<sub>C</sub></th>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td><span> {{ getCalculateXL }}</span> Ω</td>
+                                  <td><span>{{ getCalculateXC }}</span> Ω</td>
+                                  <td><span>{{ getCalculateZ }}</span> Ω</td>
+                                  <td><span>{{ getCalculateI }}</span> A</td>
+                                  <td><span>{{ getCalculateUR }}</span> V</td>
+                                  <td><span>{{ getCalculateUL }}</span> V</td>
+                                  <td><span>{{ getCalculateUC }}</span> V</td>
+                                </tr>
+                              </tbody>
+                          </table>
+
+                        <table class="table table-bordered">
+                            <thead>
+                              <th>Devre Özelliği</th>
+                              <th>P</th>
+                              <th>Q</th>
+                              <th>S</th>
+                              <th>COS &phi;</th>
+                              <th>&phi;</th>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td><span>{{ getCalculateP }}</span></td>
+                                <td><span>{{ getCalculateP }}</span> W</td>
+                                <td><span>{{ getCalculateQ }}</span> VAR</td>
+                                <td><span>{{ getCalculateS }}</span> VA</td>
+                                <td><span>{{ getCalculateCosh }}</span></td>
+                                <td><span>{{ getCalculateCosu }}</span> ° </td>
+                              </tr>
+
+                            </tbody>
+                        </table>
+                    </template>
+
+
+                    </form>
+                  </div>
+                  <div class="col-lg-6 text-center text-primary">
+                   
+                    <table class="text-primary "> 
+                      <tbody>
+                          <tr>
+                            <td>X <sub>L</sub> =2πfL</td>
+                            <td>X<sub>C</sub> = 1/2πfL</td>
+                          </tr> 
+
+                          <tr>
+                            <td>U <sub>R</sub> = I * R </td>
+                            <td>U = I * Z </td>
+                          </tr>
+
+                          <tr>
+                            <td>U <sub>L</sub> = I * X <sub>L</sub></td>
+                            <td>U <sub>C</sub> = I * X <sub>C</sub></td>
+                          </tr>
+                          <tr>
+                            
+                          <td>Z<sup>2</sup> = R<suP>2</suP> + (X<sub>X</sub> - X<sub>C</sub>) <sup>2</sup></td> 
+
+                          </tr>
+
+                          <tr>
+                            <td>P = U * I * cos &phi;</td> 
+                          </tr>
+
+                          <tr>
+                            <td>S = √P<sup>2</sup> + Q <sup>2</sup></td>
+                          </tr>
+
+                          <tr>
+                            <td>Q = U * I * sin &phi;</td>
+                          </tr>
+                      </tbody>
+                  </table>
+
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+
+
+          </div>
+
+        </div>
+
+        <footer class="pt-4 my-md-5 pt-md-5 border-top">
+          <div class="row">
+            <div class="col-12 col-md">
+              <img class="mb-2" src="../../assets/brand/bootstrap-solid.svg" alt="" width="24" height="24">
+              <small class="d-block mb-3 text-muted">&copy; 2017-2018</small>
+            </div>
+          </div>
+        </footer>
+      </div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+    </div>
+
+
+    <!-- Seri Hesapla -->
+    <script src="js/rl_hesapla.js"></script>
+
+  </body>
+</html>

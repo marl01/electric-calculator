@@ -1,0 +1,169 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+
+    <title>Seri Devre</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template -->
+    <link href="css/template.css" rel="stylesheet">
+
+    <!-- Vuejs -->
+    <script src="js/vue.js"></script>
+
+  </head>
+
+  <body>
+    <div id="app">
+      <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+        <h5 class="my-0 mr-md-auto font-weight-normal">AC-DC DEVRE ANALİZİ</h5>
+        <nav class="my-2 my-md-0 mr-md-3">
+          <a class="p-2 text-dark" href="index.html">Seri Devre</a>
+          <a class="p-2 text-dark" href="parallel.html">Paralel Devre</a>
+          <a class="p-2 text-dark" href="rl.html">RL</a>
+          <a class="p-2 text-dark" href="rlc.html">RLC</a>
+        </nav>
+      </div>
+
+      <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+        <h1 class="display-4">Seri Bağlantı hesaplama</h1>
+      </div>
+
+      <div class="container">
+
+        <div class="card-deck mb-3">
+
+          <div class="card mb-4 shadow-sm">
+
+            <div class="card-header">
+              <h4 class="my-0 font-weight-normal">Seri Bağlantı hesaplama</h4>
+            </div>
+            <div class="card-body">
+              
+              <div class="container">
+
+                <div class="row">
+                  
+                  <div class="col-lg-6">
+                    <form>
+                      <div class="form-group">
+                        <label for="seri_ana_gerilim">Ana gerilim giriniz</label>
+                        <input v-model="seri_ana_gerilim" type="number" class="form-control" id="seri_ana_gerilim" min="1" placeholder="Ana gerilimi giriniz" required="">
+                      </div>
+                      <div class="form-group">
+                        <label for="seri_direnc_toplam">Kaç tane seri direnç var?</label>
+                        <input v-model="seri_direnc_toplam" type="number" class="form-control" id="seri_direnc_toplam" placeholder="Kaç tane seri direnç var?" @change="seri_direnc_change">
+                      </div>
+
+                      <!-- Check if we have seri_direnc_toplam -->
+                      <template v-if="seri_direnc_toplam">
+
+                        <!-- For each seri_direnct_toplam in seri -->
+                        <div v-for="seri in parseInt(seri_direnc_toplam)" class="form-group">
+
+                          <label>R{{ seri }} direnç giriniz</label>
+                          <input type="number" v-model="seri_direnc[parseInt(seri)]" class="form-control"  min="1" :placeholder="'R' + seri + ' dirençi giriniz'" required="">
+
+                        </div>
+
+
+                      </template>
+
+                      <template v-if="getSeriDirencToplam">
+                        
+
+                        <table class="table table-bordered">
+                          <thead>
+                            <th scope="col">Eşdeğer direnç</th>
+                            <th scope="col">Ana Akım</th>
+                            <th scope="col">Aktif güç</th>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td><span>R<sub>eş</sub>= {{ parseFloat(getSeriDirencToplam.toFixed(3)) }}</span> Ω</td>
+                              <td><span>I={{ parseFloat(getSeriAkim.toFixed(3)) }}</span> A</td>
+                              <td><span>P={{ parseFloat(getSeriGuc.toFixed(3)) }}</span> W</td>
+                            </tr>
+                          </tbody>
+                        </table>
+
+                        <table class="table table-bordered table-sm">
+                          <thead>
+                            <th>Gerilim</th>
+                            <th>Güç</th>
+                          </thead>
+                          <tbody>
+                            <tr v-for="seri in parseInt(seri_direnc_toplam)">
+
+
+                              <template v-if="seri_direnc[parseInt(seri)]">
+                                <td>U<sub>{{ seri }}</sub>=<span> {{ parseFloat(getSeriDirencGerilim(seri_direnc[parseInt(seri)]).toFixed(3)) }} </span> V</td>
+                                <td>P<sub>{{ seri }}</sub>=<span> {{ parseFloat(getSeriDirencGuc(seri_direnc[parseInt(seri)]).toFixed(3)) }}</span> W</td>
+                              </template>
+
+                              
+                            </tr>
+                          </tbody>
+                      </table>
+
+
+
+
+
+                      </template>
+
+                      <button type="button" class="btn btn-lg btn-block btn-outline-primary" @click="hesapla">Hesapla</button>
+                    </form>
+                  </div>
+                  <div class="col-lg-6 text-center text-primary">
+                    <h4>Seri devrelerde akımlar eşittir<h4>
+                    <p>
+                        U = I * R<br>
+                        R<sub>eş</sub> = R<sub>1</sub> + R<sub>2</sub> + . . . R<sub>n</sub><br>
+                        I<sub>T</sub> = I<sub>1</sub> = I<sub>2</sub> + . . . I<sub>n</sub><br>
+                        U = U<sub>1</sub> + U<sub>2</sub> + . . . U<sub>n</sub><br>
+                        P = U * I
+                    </p>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+
+
+          </div>
+
+        </div>
+
+        <footer class="pt-4 my-md-5 pt-md-5 border-top">
+          <div class="row">
+            <div class="col-12 col-md">
+              <img class="mb-2" src="../../assets/brand/bootstrap-solid.svg" alt="" width="24" height="24">
+              <small class="d-block mb-3 text-muted">&copy; 2017-2018</small>
+            </div>
+          </div>
+        </footer>
+      </div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+    </div>
+
+
+    <!-- Seri Hesapla -->
+    <script src="js/seri_hesapla.js"></script>
+
+  </body>
+</html>
